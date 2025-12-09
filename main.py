@@ -128,7 +128,6 @@ class CarMaintenanceSystem:
         ]
 
     def _calculate_utility(self, car, cost, budget):
-        # Utility based on mileage (lower mileage is better) and cost closeness to budget
         mileage_penalty = car['mileage'] / 100000
         if cost > budget:
             penalty = (cost - budget) / budget
@@ -197,7 +196,6 @@ def predict_cost():
         return jsonify({'error': str(e)})
 
 
-# HTML template (save as templates/index.html)
 HTML_TEMPLATE = """
 <!DOCTYPE html>
 <html lang="en">
@@ -293,9 +291,7 @@ HTML_TEMPLATE = """
 </html>
 """
 
-# To run: Run the script, it will generate and train if needed, then run the app
 if __name__ == '__main__':
-    # Save the HTML template
     os.makedirs('templates', exist_ok=True)
     with open('templates/index.html', 'w') as f:
         f.write(HTML_TEMPLATE)
