@@ -1,0 +1,93 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Car Maintenance Cost Calculator</title>
+</head>
+<body>
+    <h1>Car Maintenance Cost Calculator</h1>
+
+    <h2>Budget Mode</h2>
+    <form id="budget-form">
+        <label for="budget">Budget:</label>
+        <input type="number" id="budget" name="budget" required>
+        <button type="submit">Calculate</button>
+    </form>
+    <div id="budget-results"></div>
+
+    <h2>Manual Mode</h2>
+    <form id="manual-form">
+        <label for="car_type">Car Type:</label>
+        <select id="car_type" name="car_type">
+            {% for key, value in car_types.items() %}
+                <option value="{{ key }}">{{ value }}</option>
+            {% endfor %}
+        </select><br>
+
+        <label for="age">Age (years):</label>
+        <input type="number" id="age" name="age" required><br>
+
+        <label for="mileage">Mileage (km):</label>
+        <input type="number" id="mileage" name="mileage" required><br>
+
+        <label for="engine_type">Engine Type:</label>
+        <select id="engine_type" name="engine_type">
+            {% for key, value in engine_types.items() %}
+                <option value="{{ key }}">{{ value }}</option>
+            {% endfor %}
+        </select><br>
+
+        <label for="service_level">Service Level:</label>
+        <select id="service_level" name="service_level">
+            {% for key, value in service_levels.items() %}
+                <option value="{{ key }}">{{ value }}</option>
+            {% endfor %}
+        </select><br>
+
+        <label for="parts_quality">Parts Quality:</label>
+        <select id="parts_quality" name="parts_quality">
+            {% for key, value in parts_qualities.items() %}
+                <option value="{{ key }}">{{ value }}</option>
+            {% endfor %}
+        </select><br>
+
+        <button type="submit">Predict Cost</button>
+    </form>
+    <div id="manual-result"></div>
+
+    <script>
+        document.getElementById('budget-form').addEventListener('submit', function(e) {
+            e.preventDefault();
+            fetch('/calculate', {
+                method: 'POST',
+                body: new FormData(this)
+            }).then(response => response.json()).then(data => {
+                if (data.error) {
+                    document.getElementById('budget-results').innerHTML = `<p>Error: ${data.error}</p>`;
+                } else {
+                    let html = '<h3>Variants:</h3>';
+                    data.variants.forEach(v => {
+                        html += `<div><p>Car Type: ${v.car_type}, Age: ${v.age}, Mileage: ${v.mileage}, Engine: ${v.engine_type}, Service: ${v.service_level}, Parts: ${v.parts_quality}, Cost: ${v.total_cost}</p></div>`;
+                    });
+                    document.getElementById('budget-results').innerHTML = html;
+                }
+            });
+        });
+
+        document.getElementById('manual-form').addEventListener('submit', function(e) {
+            e.preventDefault();
+            fetch('/predict_cost', {
+                method: 'POST',
+                body: new FormData(this)
+            }).then(response => response.json()).then(data => {
+                if (data.error) {
+                    document.getElementById('manual-result').innerHTML = `<p>Error: ${data.error}</p>`;
+                } else {
+                    document.getElementById('manual-result').innerHTML = `<p>Predicted Cost: ${data.predicted_cost}</p>`;
+                }
+            });
+        });
+    </script>
+</body>
+</html>
